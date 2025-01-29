@@ -21,7 +21,7 @@ final_reward_weights=(
 
 for alpha in "${alphas[@]}"; do
     for weight in "${final_reward_weights[@]}"; do
-        accelerate launch --config_file grpo-metaMATH/configs/zero3.yaml grpo-metaMATH/src/open_r1/grpo.py \
+        accelerate launch --config_file configs/zero3.yaml src/open_r1/grpo.py \
             --model_name_or_path ${model} \
             --dataset_name ${data} \
             --dataset_start 0 \
@@ -44,10 +44,9 @@ for alpha in "${alphas[@]}"; do
             --save_strategy "steps" \
             --save_steps 20 \
             --save_total_limit 8 \
-            --output_dir /raid0/yqu/models/${folder}/${task}_tmp \
+            --output_dir data/${folder}/${task}_tmp \
             --report_to wandb \
-            --bf16 \
-            &> /home/ubuntu/yqu/workspace/projects/finetune/output/backtrack-rl/${task}.log
+            --bf16
     done
 done
 
