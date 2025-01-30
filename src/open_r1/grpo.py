@@ -61,9 +61,9 @@ def final_weighted_reward(completions, current_reward, ground_truth, **kwargs):
         return rewards
     rewards = [float(evaluate_answer(gt, c)) for c, gt in zip(completions, ground_truth)]
     if weight == "no" or sum(rewards) == 0:
-        print(f"completions: {completions}")
-        print(f"ground_truth: {ground_truth}")
-        print(f"rewards: {rewards}")
+        # print(f"completions: {completions}")
+        # print(f"ground_truth: {ground_truth}")
+        # print(f"rewards: {rewards}")
         return rewards
     tokenizer = kwargs.get("tokenizer")
     num_tokens = [len(tokenizer.encode(completion)) for completion in completions]
@@ -73,16 +73,16 @@ def final_weighted_reward(completions, current_reward, ground_truth, **kwargs):
             if rewards[i] == 1:
                 total_tts += num_tokens[i]
         avg_tts = 1.0 * total_tts / sum(rewards)
-        print(f"avg_tts: {avg_tts}")
+        # print(f"avg_tts: {avg_tts}")
         rewards = [avg_tts * rewards[i] / num_tokens[i] for i in range(len(num_tokens))]
     elif weight == "ttf":
         total_ttf = sum(num_tokens)
         avg_ttf = 1.0 * total_ttf / len(rewards)
         rewards = [avg_ttf * rewards[i] / num_tokens[i] for i in range(len(num_tokens))]
-        print(f"avg_ttf: {avg_ttf}")
-    print(f"num_tokens: {num_tokens}")
-    print(f"ground_truth: {ground_truth}")
-    print(f"rewards: {rewards}")
+    #     print(f"avg_ttf: {avg_ttf}")
+    # print(f"num_tokens: {num_tokens}")
+    # print(f"ground_truth: {ground_truth}")
+    # print(f"rewards: {rewards}")
     return rewards
 
 
@@ -99,15 +99,15 @@ def make_final_weighted_reward(tokenizer, weight):
 
 def info_gain_reward(completions, current_reward, ground_truth, **kwargs):
     """Reward function that adjusts rewards based on information gain."""
-    print(f"alpha = {kwargs.get('alpha')}")
+    # print(f"alpha = {kwargs.get('alpha')}")
     final_rewards = [float(evaluate_answer(gt, c)) for c, gt in zip(completions, ground_truth)]
     adjusted_rewards = [kwargs.get("alpha", 0.1) * (f - c) for c, f in zip(current_reward, final_rewards)]
 
-    print(f"current_reward: {current_reward}")
-    print(f"final_rewards: {final_rewards}")
-    print(f"adjusted_reward: {adjusted_rewards}")
-    print(f"completions: {completions}")
-    print(f"ground_truth: {ground_truth}")
+    # print(f"current_reward: {current_reward}")
+    # print(f"final_rewards: {final_rewards}")
+    # print(f"adjusted_reward: {adjusted_rewards}")
+    # print(f"completions: {completions}")
+    # print(f"ground_truth: {ground_truth}")
 
     return adjusted_rewards
 
@@ -125,7 +125,6 @@ reward_funcs_registry = {"final": final_weighted_reward, "info_gain": info_gain_
 
 
 def main(script_args, training_args, model_args):
-    print(script_args.reward_funcs)
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
         trust_remote_code=model_args.trust_remote_code,
@@ -139,6 +138,7 @@ def main(script_args, training_args, model_args):
     tokenizer.pad_token = "<|end_of_text|>"
 
     reward_funcs = []
+    print(f"script_args.reward_funcs: {script_args.reward_funcs}")
     for func in script_args.reward_funcs:
         if func == "info_gain" and script_args.alpha is not None:
             print(f"Register <info_gain> reward with alpha = {script_args.alpha}")
