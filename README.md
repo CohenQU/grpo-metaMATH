@@ -1,3 +1,10 @@
+# CMU / HF Commands
+
+```shell
+ACCELERATE_LOG_LEVEL=info accelerate launch --config_file configs/zero3.yaml --num_processes=7 src/open_r1/grpo.py --config experiments/Llama-3.2-3B/grpo/config_v00.00.yaml
+```
+
+
 # Open R1
 
 *A fully open reproduction of DeepSeek-R1. This repo is a work in progress, let's build it together!*

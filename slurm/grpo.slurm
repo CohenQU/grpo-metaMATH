@@ -28,7 +28,7 @@ NUM_NODES=$SLURM_NNODES
 GPUS_PER_NODE=8
 WORLD_SIZE=$(($NUM_NODES*$GPUS_PER_NODE))
 # Due to conflicts between Accelerate's DeepSpeed configs and Transformers' TrainingArguments, we need to parse the gradient accumulation steps from the config file to ensure they match
-CONFIG_FILE=finetune/experiments/$MODEL/$TASK/config_$VERSION.yaml
+CONFIG_FILE=experiments/$MODEL/$TASK/config_$VERSION.yaml
 echo "Config file: $CONFIG_FILE"
 GRAD_ACC_STEPS=$(grep 'gradient_accumulation_steps' $CONFIG_FILE | awk '{print $2}')
 
@@ -50,11 +50,12 @@ MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
 MASTER_PORT=6000
 
 export CMD=" \
-    finetune/scripts/$TASK.py --config $CONFIG_FILE --output_dir=data/$MODEL-$TASK-$VERSION --run_name=$MODEL-$TASK-$VERSION $OPTIONAL_ARGS
+    src/open_r1/$TASK.py --config $CONFIG_FILE --output_dir=data/$MODEL-$TASK-$VERSION --run_name=$MODEL-$TASK-$VERSION $OPTIONAL_ARGS
     "
 
 export LAUNCHER="HF_HUB_ENABLE_HF_TRANSFER=1 ACCELERATE_LOG_LEVEL=info TRANSFORMERS_VERBOSITY=info accelerate launch \
-    --config_file finetune/experiments/accelerate_configs/$ACCELERATOR.yaml  \
+    --config_file configs/$ACCELERATOR.yaml  \
+    --num_processes 7 \
     --gradient_accumulation_steps $GRAD_ACC_STEPS \
     --num_machines $NUM_NODES \
     --num_processes $WORLD_SIZE \
