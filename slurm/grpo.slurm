@@ -55,10 +55,9 @@ export CMD=" \
 
 export LAUNCHER="HF_HUB_ENABLE_HF_TRANSFER=1 ACCELERATE_LOG_LEVEL=info TRANSFORMERS_VERBOSITY=info accelerate launch \
     --config_file configs/$ACCELERATOR.yaml  \
-    --num_processes 7 \
     --gradient_accumulation_steps $GRAD_ACC_STEPS \
     --num_machines $NUM_NODES \
-    --num_processes $WORLD_SIZE \
+    --num_processes $(($WORLD_SIZE - 1)) \
     --main_process_ip $MASTER_ADDR \
     --main_process_port $MASTER_PORT \
     --machine_rank \$SLURM_PROCID \

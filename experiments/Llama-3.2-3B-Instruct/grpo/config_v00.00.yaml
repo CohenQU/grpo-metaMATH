@@ -17,7 +17,7 @@ dataset_end: 20_000
 
 # Script args
 alpha: 0
-final_reward_weight: zero
+final_reward_weight: uniform
 reward_funcs:
   - final
   - info_gain
@@ -25,7 +25,6 @@ reward_funcs:
 # Training arguments
 num_train_epochs: 1
 per_device_train_batch_size: 1
-per_device_eval_batch_size: 2
 gradient_accumulation_steps: 32
 gradient_checkpointing: true
 gradient_checkpointing_kwargs:

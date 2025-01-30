@@ -4,6 +4,24 @@
 ACCELERATE_LOG_LEVEL=info accelerate launch --config_file configs/zero3.yaml --num_processes=7 src/open_r1/grpo.py --config experiments/Llama-3.2-3B/grpo/config_v00.00.yaml
 ```
 
+## Launching jobs on a Slurm cluster
+
+If you have access to a Slurm cluster, we provide a `experiments/grpo.slurm` script that will automatically queue training jobs for you. Here's how you can use it:
+
+```shell
+sbatch --job-name=hf-cmu-{task} --nodes=1 recipes/launch.slurm {task} {model_name} {version} {accelerator}
+```
+
+Here `{model_name}` and `{task}` are defined as above, while `{version}` refers to the YAML config suffix (e.g. `v00.00`) and `{accelerator}` refers to the choice of 🤗 Accelerate config in `experiments/accelerate_configs`. If you wish to override the default config parameters, you can provide them by appending a space-separated string like `'--arg1=value1 --arg2=value2'. Here's a concrete example to run SFT on 1 node of 8 GPUs:
+
+```shell
+# Launch on Slurm and override default hyperparameters
+sbatch --job-name=hf-cmu-sft-conversations --nodes=1 finetune/launch.slurm sft_conversations Llama-3.2-1B-Instruct v00.00 zero3 '--per_device_train_batch_size=42 --num_train_epochs=5'
+```
+
+You can scale the number of nodes by increasing the `--nodes` flag.
+
+**⚠️ Note:** the configuration in `experiments/launch.slurm` is optimised for the Hugging Face Compute Cluster and may require tweaking to be adapted to your own compute nodes.
 
 # Open R1
 
