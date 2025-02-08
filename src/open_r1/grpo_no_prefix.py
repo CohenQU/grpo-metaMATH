@@ -210,15 +210,12 @@ def main(script_args, training_args, model_args):
         dataset["train"] = dataset["train"].select(range(script_args.dataset_start, script_args.dataset_end))
 
     def process_dataset(example):
-        messages = example["messages"]
-        messages[-1]["content"] += "\nWait, this seems off. Let's try something else.\nStep"
-        text = tokenizer.apply_chat_template(
-            messages, tokenize=False, return_tensors="pt", continue_final_message=True, add_generation_prompt=False
-        )
+        messages = [{"role": "user", "content": example["problem"]}]
+        text = tokenizer.apply_chat_template(messages, tokenize=False, return_tensors="pt", add_generation_prompt=True)
         # print(text)
-        return {"prompt": text, "ground_truth": example["ground_truth"], "current_reward": example["current_reward"]}
+        return {"prompt": text, "ground_truth": example["answer"], "current_reward": 0}
 
-    processed_dataset = dataset.map(process_dataset, remove_columns=["messages"])
+    processed_dataset = dataset.map(process_dataset, remove_columns=["problem", "answer"])
 
     # # Get reward functions
     # reward_funcs = [reward_funcs_registry[func] for func in script_args.reward_funcs]
