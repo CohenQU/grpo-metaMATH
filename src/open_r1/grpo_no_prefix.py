@@ -15,7 +15,6 @@
 
 import logging
 import os
-import re
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
@@ -24,19 +23,15 @@ import datasets
 import torch
 import transformers
 from datasets import load_dataset
-from transformers import AutoTokenizer
-
-from math_equivalence import evaluate_answer
-from src.chat_templates import LLAMA_3_TEMPLATE
-
-from transformers import set_seed
+from transformers import AutoTokenizer, set_seed
 from transformers.trainer_utils import get_last_checkpoint
 
-from latex2sympy2_extended import NormalizationConfig
-from math_verify import LatexExtractionConfig, parse, verify
+from math_equivalence import evaluate_answer
 from open_r1.configs import GRPOConfig
 from open_r1.utils.callbacks import get_callbacks
+from src.chat_templates import LLAMA_3_TEMPLATE
 from trl import GRPOTrainer, ModelConfig, ScriptArguments, TrlParser, get_peft_config
+
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +138,6 @@ reward_funcs_registry = {"final": final_weighted_reward, "info_gain": info_gain_
 
 
 def main(script_args, training_args, model_args):
-
     print(script_args.reward_funcs)
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_name_or_path,
@@ -233,7 +227,6 @@ def main(script_args, training_args, model_args):
     # for split in dataset:
     #     if "messages" in dataset[split].column_names:
     #         dataset[split] = dataset[split].remove_columns("messages")
-
 
     logger.info("*** Initializing model kwargs ***")
     torch_dtype = (
